@@ -48,8 +48,9 @@ let rec fold_quad (f: 'a -> (coord * 'b)  -> 'a)(a: 'a) (t: 'b quadtree): 'a =
   |Node (_,q1,q2,q3,q4)-> fold_quad f (fold_quad f (fold_quad f (fold_quad f a q1) q2) q3) q4
 
 	   
-let rec fold_region (f: 'a -> coord * 'b -> 'a) (a : 'a) (t : 'b quadtree) 
-  (r : region) : 'a
-=
-  failwith "TODO"
-
+let rec fold_region (f: 'a -> coord * 'b -> 'a) (a : 'a) (t : 'b quadtree) (r : region) : 'a =
+  match t with Leaf (((x1,y1), (x2,y2)), b)-> (match r with ((tx1,ty1), (tx2,ty2))-> 
+                                            if  (tx1>=x1 && tx1<= x2)&&(ty1>=y1 && ty2<=y2) 
+                                            then  List.fold_left f a b
+                                            else a) 
+  |Node (_,q1,q2,q3,q4)-> fold_quad f (fold_quad f (fold_quad f (fold_quad f a q1) q2) q3) q4
