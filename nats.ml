@@ -84,4 +84,28 @@ let sum_overflows (i1:int) (i2:int) : bool =
    and AlienNatFn, being careful to use the declarations and
    types specified in the problem set. *)
 
+module IntNat: NATN = struct 
+type t = int 
+exception Unrepresentable
+let zero= 0
+let one =1
 
+
+type sign = Positive | Negative 
+
+let sign_int (n:int) : sign = if n >= 0 then Positive else Negative
+
+let sum_overflows (i1:int) (i2:int) : bool = 
+  sign_int i1 = sign_int i2 && sign_int(i1 + i2) <> sign_int i1
+
+let prod_overflows (i1:int) (i2:int) :bool=
+  sign_int i1 = sign_int i2 && sign_int (i1 * i2)<> sign_int i1
+
+let ( + ) t1 t2 = if t1 + t2 < 0 || sum_overflows t1 t2 then raise (Unrepresentable) else t1+t2  
+let ( * ) t1 t2 = if t1 * t2 < 0 || prod_overflows t1 t2 then then raise (Unrepresentable) else t1*t2
+let ( < ) t1 t2 =  t1>t2
+let ( === ) t1 t2 = t1=t2
+
+let int_of_nat t1 = t1
+let nat_of_int n1 = n1
+end
