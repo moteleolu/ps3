@@ -178,3 +178,34 @@ module NatConvertFn (N: NATN) = struct
     N.nat_of_int (n)
 end
 
+
+module AlienNatFn (M: AlienMapping): NATN = struct 
+type t = M.aliensym list
+exception Unrepresentable 
+
+let zero =[M.zero]
+let one = [M.one]
+
+let ( + ) t1 t2= List.fold_left (fun x y-> y::x) t1 t2 
+
+let ( * ) t1 t2= 
+let rec helper (x:M.aliensym list) (n:int) = (match n with 1-> x
+| y -> ( + ) x (helper x (n-1)))  
+in 
+let i= List.fold_left (fun x y-> Pervasives.(+) (M.int_of_aliensym y) x) 0 t1  in
+helper t2 i
+
+let ( < ) t1 t2 = (List.fold_left (fun x y-> Pervasives.(+) (M.int_of_aliensym y) x) 0 t1) < 
+(List.fold_left (fun x y-> Pervasives.(+) (M.int_of_aliensym y) x) 0 t2 ) 
+
+let ( === ) t1 t2 = (List.fold_left (fun x y-> Pervasives.(+) (M.int_of_aliensym y) x) 0 t1) =
+(List.fold_left (fun x y-> Pervasives.(+) (M.int_of_aliensym y) x) 0 t2 )
+
+let int_of_nat t1 = List.fold_left (fun x y-> Pervasives.(+) (M.int_of_aliensym y) x) 0 t1
+
+let rec nat_of_int i1 = match i1 with 0 -> zero |1 -> one
+|n -> ( + ) one (nat_of_int (n-1))  
+
+
+end 
+
