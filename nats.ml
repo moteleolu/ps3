@@ -102,14 +102,56 @@ module IntNat: NATN = struct
 
   let prod_overflows (i1:int) (i2:int) :bool=
     sign_int i1 = sign_int i2 && sign_int (i1 * i2)<> sign_int i1
-
-  let ( + ) t1 t2 = if t1 + t2 < 0 || sum_overflows t1 t2 then raise (Unrepresentable) else t1+t2  
-  let ( * ) t1 t2 = if t1 * t2 < 0 || prod_overflows t1 t2 then raise (Unrepresentable) else t1*t2
-  let ( < ) t1 t2 =  t1>t2
+    
+  let ( + ) t1 t2 = if t1 + t2 < 0 || sum_overflows t1 t2 
+                    then raise (Unrepresentable) else t1+t2  
+  let ( * ) t1 t2 = if t1 * t2 < 0 || prod_overflows t1 t2 
+                    then raise (Unrepresentable) else t1*t2
+  let ( < ) t1 t2 =  t1<t2
   let ( === ) t1 t2 = t1=t2
 
   let int_of_nat t1 = t1
-  let nat_of_int n1 = n1
+  let nat_of_int n1 = if n1 < 0 then raise Unrepresentable else n1
+end
+
+module ListNat: NATN = struct
+(* The list [a1; ...; an] represents the
+* natural number n. That is, the list lst represents
+* length(lst). The empty list represents 0. The values of * the list elements are irrelevant. *)
+  type t =  int list
+  exception Unrepresentable 
+
+  let zero =[]
+  let one = [1]
+
+  type sign = Positive | Negative 
+
+  let sign_int (n:int) : sign = if n >= 0 then Positive else Negative
+
+  let sum_overflows (i1:int) (i2:int) : bool = 
+    sign_int i1 = sign_int i2 && sign_int(i1 + i2) <> sign_int i1
+
+  let prod_overflows (i1:int) (i2:int) :bool=
+    sign_int i1 = sign_int i2 && sign_int (i1 * i2)<> sign_int i1
+
+  let rec nat_of_int n1 = if Pervasives.( < ) n1 0 then raise Unrepresentable else 
+  match n1 with 
+    0 -> zero
+  | n -> 1:: nat_of_int (n-1)   
+
+
+  let ( + ) (t1:int list) (t2:int list) = 
+  if sum_overflows (List.length t1) (List.length t2)
+  then raise (Unrepresentable) else nat_of_int (List.length t1 + List.length t2) 
+
+  let ( * ) (t1:int list) (t2:int list)  = if prod_overflows (List.length t1) (List.length t2) then 
+  raise (Unrepresentable) else nat_of_int ((List.length t1) * (List.length t2))
+
+  let ( < ) t1 t2 = List.length t1 < List.length t2
+
+  let ( === ) t1 t2 = List.length t1 = List.length t2
+
+  let int_of_nat t1 = List.length t1
 end
 
 
