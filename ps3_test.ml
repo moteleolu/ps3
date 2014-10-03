@@ -58,13 +58,49 @@ let l1 = [list in order they're found...] in
 let r1 = city_search t1 r1 in 
 assert_true (r1=l1)*)
 
+module Alientest: AlienMapping = struct 
+type aliensym = string 
 
-TEST_UNIT "IntNat+_test7" =
-let a = Nats.IntNat.3 in 
-let b = Nats.IntNat.4 in
-let c = Nats.IntNat.(+) in
-let d = c a b in
-assert_true (d=5)
+  let int_of_aliensym sym = int_of_string sym
+  let one = "1"
+  let zero = "0"
+  (*let aliensym_of_int i= string_of_int i*)
+end 
+
+TEST_UNIT "AlienNatFnTest_1"=
+assert_true((Alientest.int_of_aliensym Alientest.zero)= 0);
+let module AlienFn = AlienNatFn(Alientest) in   
+let a= AlienFn.zero in
+let b= AlienFn.zero in
+assert_true(a=b);
+assert_true (AlienFn.(===) (AlienFn.(+) AlienFn.zero AlienFn.one) (AlienFn.nat_of_int 1));
+assert_true (AlienFn.(<) (AlienFn.nat_of_int 5) (AlienFn.nat_of_int 6));
+assert_true (AlienFn.int_of_nat (AlienFn.nat_of_int 5) =5);
+assert_true (AlienFn.(===) (AlienFn.( * ) (AlienFn.nat_of_int 5) (AlienFn.nat_of_int 5)) (AlienFn.nat_of_int 25))
 
 
-let () = Pa_ounit_lib.Runtime.summarize()
+TEST_UNIT "IntNatTest_1"=
+let module Mod=IntNat in
+assert_true (Mod.(<) Mod.zero Mod.one );
+assert_true (Mod.(===) (Mod.nat_of_int 5) (Mod.(+) (Mod.nat_of_int 3) (Mod.nat_of_int 2)));
+assert_true (Mod.int_of_nat (Mod.nat_of_int 5)=5);
+assert_true (Mod.(===) (Mod.( * ) (Mod.nat_of_int 5) (Mod.nat_of_int 5)) (Mod.nat_of_int 25));
+assert_raises (Some Mod.Unrepresentable) Mod.nat_of_int ~-5;
+assert_raises (Some Mod.Unrepresentable) (Mod.(+) (Mod.nat_of_int max_int)) (Mod.nat_of_int 1);
+assert_raises (Some Mod.Unrepresentable) (Mod.( * ) (Mod.nat_of_int max_int)) (Mod.nat_of_int 2)
+
+
+TEST_UNIT "ListNatTest_1"=
+let module Mod=ListNat in
+assert_true (Mod.(<) Mod.zero Mod.one );
+assert_true (Mod.(===) (Mod.nat_of_int 5) (Mod.(+) (Mod.nat_of_int 3) (Mod.nat_of_int 2)));
+assert_true (Mod.int_of_nat (Mod.nat_of_int 5)=5);
+assert_true (Mod.(===) (Mod.( * ) (Mod.nat_of_int 5) (Mod.nat_of_int 5)) (Mod.nat_of_int 25));
+assert_raises (Some Mod.Unrepresentable) Mod.nat_of_int ~-5;
+
+
+TEST_UNIT " NatConvertFnTest_1" =
+let module Mod= IntNat in
+let module Conv= NatConvertFn (Mod) in
+assert_true (Conv.int_of_nat (Mod.nat_of_int 5) = 5);
+assert_true ((Conv.nat_of_int 5) = (Mod.nat_of_int 5))
