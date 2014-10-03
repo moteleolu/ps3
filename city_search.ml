@@ -17,7 +17,7 @@ let load_city_data (s:string) : string quadtree =
 *Precondition: The quadtree is a valid string quadtree whose values are city
 *names and the region is a valid region completely contained within the region
 *spanned by the quadtree
-*Postcondition: Returns a string containing all the names and locations of the 
+*Postcondition: Returns a string list containing all the names and locations of the 
 *cities found within the given region of the quadtree in the following format:
 *"Latitude, Longitude, City Name"
 *)

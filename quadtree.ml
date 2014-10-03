@@ -42,13 +42,13 @@ let rec insert (q: 'a quadtree) (c : coord) (s:'a) : 'a quadtree =
     | Leaf (((x1,y1), (x2,y2)), _) -> (x1, x2, ((x1+.x2)/.2.), y1, y2, ((y1+.y2)/.2.)) in 
 
   match (q, c) with 
-    (Leaf (a,b), _) -> if ((not (is_divisible a)) || c = (x3, y3)) then Leaf (a, (c,s)::b) 
+    (Leaf (a,b), _) -> if (not (is_divisible a)) || c = (x3, y3) then Leaf (a, (c,s)::b) 
                   else insert (new_tree a) c s
-  | (Node (r, q1,q2,q3,q4), (tx1,ty1)) -> if tx1>x3 && ty1>y3 
+  | (Node (r, q1,q2,q3,q4), (tx1,ty1)) -> if tx1>=x3 && ty1>=y3 
                             then Node (r, insert q1 c s, q2, q3, q4)
-                            else if tx1<x3 && ty1>y3 
+                            else if tx1<=x3 && ty1>=y3 
                             then Node (r, q1, insert q2 c s, q3, q4)
-                            else if tx1<x3 && ty1<y3 
+                            else if tx1<=x3 && ty1<=y3 
                             then Node (r, q1, q2, insert q3 c s, q4)
                             else Node (r, q1, q2, q3, insert q4 c s)                          
 
