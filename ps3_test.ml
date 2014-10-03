@@ -212,7 +212,7 @@ type aliensym = string
   (*let aliensym_of_int i= string_of_int i*)
 end 
 
-TEST_UNIT "AlienNatFnTest_1"=
+TEST_UNIT "AlienNatFn_test_7"=
 assert_true((Alientest.int_of_aliensym Alientest.zero)= 0);
 let module AlienFn = AlienNatFn(Alientest) in   
 let a= AlienFn.zero in
@@ -224,7 +224,7 @@ assert_true (AlienFn.int_of_nat (AlienFn.nat_of_int 5) =5);
 assert_true (AlienFn.(===) (AlienFn.( * ) (AlienFn.nat_of_int 5) (AlienFn.nat_of_int 5)) (AlienFn.nat_of_int 25))
 
 
-TEST_UNIT "IntNatTest_1"=
+TEST_UNIT "IntNat_test_8"=
 let module Mod=IntNat in
 assert_true (Mod.(<) Mod.zero Mod.one );
 assert_true (Mod.(===) (Mod.nat_of_int 5) (Mod.(+) (Mod.nat_of_int 3) (Mod.nat_of_int 2)));
@@ -235,7 +235,7 @@ assert_raises (Some Mod.Unrepresentable) (Mod.(+) (Mod.nat_of_int max_int)) (Mod
 assert_raises (Some Mod.Unrepresentable) (Mod.( * ) (Mod.nat_of_int max_int)) (Mod.nat_of_int 2)
 
 
-TEST_UNIT "ListNatTest_1"=
+TEST_UNIT "ListNat_test_9"=
 let module Mod=ListNat in
 assert_true (Mod.(<) Mod.zero Mod.one );
 assert_true (Mod.(===) (Mod.nat_of_int 5) (Mod.(+) (Mod.nat_of_int 3) (Mod.nat_of_int 2)));
@@ -244,7 +244,7 @@ assert_true (Mod.(===) (Mod.( * ) (Mod.nat_of_int 5) (Mod.nat_of_int 5)) (Mod.na
 assert_raises (Some Mod.Unrepresentable) Mod.nat_of_int ~-5;
 
 
-TEST_UNIT " NatConvertFnTest_1" =
+TEST_UNIT " NatConvertFn_test_10" =
 let module Mod= IntNat in
 let module Conv= NatConvertFn (Mod) in
 assert_true (Conv.int_of_nat (Mod.nat_of_int 5) = 5);
