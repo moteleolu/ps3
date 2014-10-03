@@ -89,16 +89,16 @@ let rec fold_quad (f: 'a -> (coord * 'b)  -> 'a)(a: 'a) (t: 'b quadtree): 'a =
 
 
 (*Folds across all the values in a given region of a quadtree, applying the 
-*given function to each value of the region using the given accumulator, a
+*given function to each value within the region r using the given accumulator, a
 *Precondition: r is a valid region that is included in the region spanned by 
 *the quadtree. If the quadtree is a Leaf, the region must be the exact region of the Leaf. 
 *The quadtree is also a valid quadtree 
 Postcondition: Returns the value of the function applied to every value of the 
 *region within the quadtree and folded with the given accumulator
 *)	   
-let rec fold_region (f: 'a -> coord * 'b -> 'a) (a : 'a) (t : 'b quadtree) (r : region) : 'a =
-  match (t, r) with 
-    (Leaf (((x1,y1), (x2,y2)), b), ((tx1,ty1), (tx2,ty2)))-> if  (tx1 >= x1 && tx1 <= x2 && ty1 >= y1 && ty2<=y2)
-                                                             then  List.fold_left f a b
-                                                             else a 
-  | (Node (_,q1,q2,q3,q4),_)-> fold_region f (fold_region f (fold_region f (fold_region f a q1 r) q2 r) q3 r) q4 r
+let fold_region (f: 'a -> coord * 'b -> 'a) (a : 'a) (t : 'b quadtree) (r : region) : 'a=
+let apply_if_in_region f1 acc obj =
+  match (obj, r) with 
+  (((tx1,ty1),b), ((x1,y1),(x2,y2)))-> if (tx1>=x1 && tx1<= x2) && (ty1>=y1 && ty1<= y2) then f1 acc obj else acc 
+in
+fold_quad (apply_if_in_region f) a t   
