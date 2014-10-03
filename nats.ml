@@ -111,7 +111,7 @@ module IntNat: NATN = struct
   let ( === ) t1 t2 = t1=t2
 
   let int_of_nat t1 = t1
-  let nat_of_int n1 = if n1 < 0 || n1= max_int then raise Unrepresentable else n1
+  let nat_of_int n1 = if n1 < 0 then raise Unrepresentable else n1
 end
 
 module ListNat: NATN = struct
@@ -134,7 +134,7 @@ module ListNat: NATN = struct
   let prod_overflows (i1:int) (i2:int) :bool=
     sign_int i1 = sign_int i2 && sign_int (i1 * i2)<> sign_int i1
 
-  let rec nat_of_int n1 = if Pervasives.( < ) n1 0 || n1 = max_int then raise Unrepresentable else 
+  let rec nat_of_int n1 = if Pervasives.( < ) n1 0 then raise Unrepresentable else 
   match n1 with 
     0 -> zero
   | n -> 1:: nat_of_int (n-1)   
