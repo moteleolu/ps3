@@ -19,6 +19,7 @@ exception OutOfBounds
 let is_divisible (r: region) = 
   match r with ((x1,y1), (x2,y2)) -> ((x1-.x2)**2. +. (y1-.y2)**2.) > min_diagonal
 
+
 (*Creates a new quadtree of the Node constructor
 *Precondition: Takes a valide 2-dimensional region
 *Postcondition: Returns a Node spanning the region specified
@@ -28,6 +29,7 @@ let new_tree (r:region) : 'a quadtree =
   else let (x1, x2, x3, y1, y2, y3) = match r with ((x1,y1), (x2,y2))-> (x1, x2, ((x1+.x2)/.2.), y1, y2, ((y1+.y2)/.2.)) in  
        Node (r, Leaf (((x3,y3), (x2,y2)),[]), Leaf (((x1,y3), (x3,y2)),[]),
             Leaf (((x1,y1), (x3,y3)),[]), Leaf (((x3,y1), (x2,y3)),[]))
+
 
 (*Inserts a value into a quadtree and the specified coordinates
 *Precondition: The coordinates are within the region of the quadtree and the 
@@ -41,16 +43,37 @@ let rec insert (q: 'a quadtree) (c : coord) (s:'a) : 'a quadtree =
       Node (((x1,y1), (x2,y2)), q1,q2,q3,q4) -> (x1, x2, ((x1+.x2)/.2.), y1, y2, ((y1+.y2)/.2.))
     | Leaf (((x1,y1), (x2,y2)), _) -> (x1, x2, ((x1+.x2)/.2.), y1, y2, ((y1+.y2)/.2.)) in 
 
+  let is_on_edge_or_center (tr : 'a quadtree) (coor : coord) : bool =
+    match coor with 
+    (tx1, ty1) -> if (x3 = tx1 && (y3 = ty1 || y1 = ty1 || y2 = ty1)) || (x1 = tx1 && 
+                  (y3 = ty1 || y1 = ty1 || y2 = ty1)) || (x2 = tx1 && (y3 = ty1 || 
+                  y1 = ty1 || y2 = ty1)) then true 
+                  else false in 
+
+  let is_in_reg1 (coor : coord) : bool =
+    match coor with 
+    (tx1, ty1) -> if tx1>=x3 && ty1>=y3 then true else false in
+
+  let is_in_reg2 (coor : coord) : bool =
+    match coor with 
+    (tx1, ty1) -> if tx1<=x3 && ty1>=y3 then true else false in 
+
+  let is_in_reg3 (coor : coord) : bool =
+    match coor with 
+    (tx1, ty1) -> if tx1<=x3 && ty1<=y3 then true else false in 
+
   match (q, c) with 
-    (Leaf (a,b), _) -> if (not (is_divisible a)) || c = (x3, y3) then Leaf (a, (c,s)::b) 
+    (Leaf (a,b), _) -> if (not (is_divisible a)) || is_on_edge_or_center q c 
+                  then Leaf (a, (c,s)::b) 
                   else insert (new_tree a) c s
-  | (Node (r, q1,q2,q3,q4), (tx1,ty1)) -> if tx1>=x3 && ty1>=y3 
+  | (Node (r, q1,q2,q3,q4), _) -> if is_in_reg1 c 
                             then Node (r, insert q1 c s, q2, q3, q4)
-                            else if tx1<=x3 && ty1>=y3 
+                            else if is_in_reg2 c 
                             then Node (r, q1, insert q2 c s, q3, q4)
-                            else if tx1<=x3 && ty1<=y3 
+                            else if is_in_reg3 c  
                             then Node (r, q1, q2, insert q3 c s, q4)
                             else Node (r, q1, q2, q3, insert q4 c s)                          
+
 
 (*Folds across all the values in a quadtree, applying the given function to 
 *each value of the tree using the given accumulator, a
@@ -64,10 +87,12 @@ let rec fold_quad (f: 'a -> (coord * 'b)  -> 'a)(a: 'a) (t: 'b quadtree): 'a =
     Leaf ( _, b)-> List.fold_left f a b 
   | Node (_,q1,q2,q3,q4)-> fold_quad f (fold_quad f (fold_quad f (fold_quad f a q1) q2) q3) q4
 
+
 (*Folds across all the values in a given region of a quadtree, applying the 
 *given function to each value of the region using the given accumulator, a
 *Precondition: r is a valid region that is included in the region spanned by 
-*the quadtree. The quadtree is also a valide quadtree 
+*the quadtree. If the quadtree is a Leaf, the region must be the exact region of the Leaf. 
+*The quadtree is also a valid quadtree 
 Postcondition: Returns the value of the function applied to every value of the 
 *region within the quadtree and folded with the given accumulator
 *)	   
