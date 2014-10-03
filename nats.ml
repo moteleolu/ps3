@@ -111,7 +111,7 @@ module IntNat: NATN = struct
   let ( === ) t1 t2 = t1=t2
 
   let int_of_nat t1 = t1
-  let nat_of_int n1 = if n1 < 0 then raise Unrepresentable else n1
+  let nat_of_int n1 = if n1 < 0 || n1= max_int then raise Unrepresentable else n1
 end
 
 module ListNat: NATN = struct
