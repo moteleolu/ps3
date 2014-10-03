@@ -23,4 +23,4 @@ let load_city_data (s:string) : string quadtree =
 *"Latitude, Longitude, City Name"
 *)
 let city_search (q: string quadtree) (r : region) : string list = 
-	fold_region (fun x y-> snd y :: x) [] q r 
+	fold_region (fun x y-> match fst y with (a,b) ->( string_of_float b^ "," ^string_of_float a^ "," ^snd y) :: x) [] q r 

@@ -197,19 +197,26 @@ let r5 = in
 assert_true (t5=r5)*)
 
 
-(*TEST_UNIT "city_search_test6" =
-let t1 = [use tree created in test5 as tree] in 
-let r1 = [region]
-let l1 = [list in order they're found...] in 
+TEST_UNIT "city_search_test6" =
+let t1 = Node (((~-.180., ~-.90.), (180.,90.)), Leaf (((0., 0.), (180., 90.)), [((0., 0.), "Gulf of Guinea")]), Leaf (((~-.180., 0.), (0., 90.)), []), 
+	Leaf (((~-.180., ~-.90.), (0., 0.)), []), Leaf (((0., ~-.90.), (180., 0.)), [])) in 
+let r1 = ((~-.180., ~-.90.), (180.,90.)) in 
+let l1 = ["0.,0.,Gulf of Guinea"] in 
 let r1 = city_search t1 r1 in 
-assert_true (r1=l1)*)
+assert_true (r1=l1)
+let t2 = Node (((~-.180., ~-.90.), (180.,90.)), Leaf (((0., 0.), (180., 90.)), [((0., 0.), "Gulf of Guinea"); ((180., 0.), "South Tarawa")]), Leaf (((~-.180., 0.), (0., 90.)), []), 
+	Leaf (((~-.180., ~-.90.), (0., 0.)), []), Leaf (((0., ~-.90.), (180., 0.)), [])) in 
+let r2 = ((~-.180., ~-.90.), (180.,90.)) in 
+let l2 = ["0.,180.,South Tarawa"; "0.,0.,Gulf of Guinea"] in 
+let r2 = city_search t2 r2 in 
+assert_true (r2=l2)
+
 
 module Alientest: AlienMapping = struct 
 type aliensym = string 
   let int_of_aliensym sym = int_of_string sym
   let one = "1"
   let zero = "0"
-  (*let aliensym_of_int i= string_of_int i*)
 end 
 
 TEST_UNIT "AlienNatFn_test_7"=
